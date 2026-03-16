@@ -1,12 +1,7 @@
 name: Build and Release Executables
 
 on:
-  # push:
-  #   branches:
-  #     - main  # Runs automatically on every commit to main
-  #   tags:
-  #     - 'v*'
-  workflow_dispatch: # Adds a manual "Run workflow" button in the Actions tab
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -17,13 +12,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: 
+        os:
           - windows-latest
           - ubuntu-latest
           - macos-latest
 
     env:
-      MAIN_PY_FILE: 'main.pyw'
+      MAIN_PY_FILE: main.pyw
+      APP_NAME: main
 
     steps:
     - name: Checkout code
@@ -33,30 +29,25 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.10.x'
-        cache: 'pip'
+        cache: pip
 
     - name: Install Python dependencies
-      run: |
-        pip install -r requirements.txt
-      working-directory: ./
+      run: pip install -r requirements.txt
 
     - name: Install PyInstaller
-      run: |
-        pip install pyinstaller
-      working-directory: ./
+      run: pip install pyinstaller
 
     - name: Build executable
       run: |
-        pyinstaller --name "Contract Automation" --icon=icon.ico --clean --onefile ${{ env.MAIN_PY_FILE }}
-      working-directory: ./
+        pyinstaller --clean --onefile ${{ env.MAIN_PY_FILE }}
 
     - name: Rename Executable for Release
       shell: bash
       run: |
         if [ "${{ matrix.os }}" == "windows-latest" ]; then
-          mv "dist/Contract Automation.exe" "dist/Contract Automation-${{ matrix.os }}.exe"
+          mv "dist/${APP_NAME}.exe" "dist/${APP_NAME}-${{ matrix.os }}.exe"
         else
-          mv "dist/Contract Automation" "dist/Contract Automation-${{ matrix.os }}"
+          mv "dist/${APP_NAME}" "dist/${APP_NAME}-${{ matrix.os }}"
         fi
 
     - name: Upload Artifact
@@ -70,6 +61,7 @@ jobs:
     name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
+
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
