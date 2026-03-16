@@ -1,2 +1,7 @@
 # Pyinstaller-Github-Actions
-A Github Actions Script For Pyinstaller To Package And Release Prebuilt Binaries For Linux, MacOS &amp; Windows.
+
+A GitHub Actions workflow that automatically builds a Python script into standalone executables using **PyInstaller**.
+
+It compiles the program on **Windows, Linux, and macOS**, then uploads the resulting binaries as **GitHub Release assets**.
+
+The workflow can be run manually from the **Actions** tab and produces platform-specific builds of the Python application.
